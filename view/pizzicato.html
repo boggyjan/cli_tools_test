@@ -1,0 +1,46 @@
+<button onclick="start()">start</button>
+<script>
+  // https://github.com/alemangui/pizzicato#sounds-volume
+
+  var pizzicatoLoaded = false
+
+  function loadPizzicato () {
+    return new Promise((resolve, reject) => {
+      if (pizzicatoLoaded) {
+        resolve(true)
+      } else {
+        var script = document.createElement('script')
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.1/Pizzicato.js'
+        script.onload = () => {
+          pizzicatoLoaded = true
+          resolve(true)
+        }
+        document.head.append(script)
+      }
+    })
+  }
+
+  async function start () {
+    await loadPizzicato()
+
+    var pingPongDelay = new Pizzicato.Effects.PingPongDelay({
+      feedback: 0.6,
+      time: 0.4,
+      mix: 0.5
+    })
+
+    var reverb = new Pizzicato.Effects.Reverb({
+      time: 3,
+      decay: 3,
+      reverse: false,
+      mix: 0.8
+    })
+
+    var voice = new Pizzicato.Sound({ source: 'input' }, () => {
+      voice.volume = 2
+      voice.addEffect(pingPongDelay)
+      voice.addEffect(reverb)
+      voice.play()
+    })
+  }
+</script>
